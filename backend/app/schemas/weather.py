@@ -6,7 +6,16 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
-ProviderStatus = Literal["live", "adapter_ready", "data_unavailable", "error"]
+# Model status, decided at request time from what the real source actually returned:
+#   live         real current forecast retrieved and validated
+#   waiting      source reachable but the expected model run is not published yet
+#   unavailable  official source checked, but no machine-readable point forecast can be ingested
+#   error        retrieval / validation failed this time
+#   inactive     optional model with no inference pipeline or verified feed (never fetched)
+# "adapter_ready" / "data_unavailable" are kept only for backward compatibility of the API contract.
+ProviderStatus = Literal["live", "waiting", "unavailable", "error", "inactive", "adapter_ready", "data_unavailable"]
+ModelTier = Literal["core", "optional"]
+Provenance = dict[str, str | int | float | bool | None]
 
 
 class WeatherSchema(BaseModel):
@@ -34,6 +43,11 @@ class ForecastRecord(WeatherSchema):
     precipitation: float | None = Field(default=None, ge=0)
     wind_speed: float | None = Field(default=None, ge=0)
     humidity: float | None = Field(default=None, ge=0, le=100)
+    # Ensemble sources only: number of members and member standard deviation per variable.
+    ensemble_members: int | None = None
+    temperature_spread: float | None = Field(default=None, ge=0)
+    precipitation_spread: float | None = Field(default=None, ge=0)
+    wind_speed_spread: float | None = Field(default=None, ge=0)
 
     @field_validator("valid_time")
     @classmethod
@@ -56,7 +70,12 @@ class ModelDescriptor(WeatherSchema):
     provider: str
     status: ProviderStatus
     source: str | None = None
+    source_url: str | None = None
     note: str | None = None
+    source_type: str | None = None  # "live_api" | "official_catalogue" | None (not connected)
+    is_live: bool = False
+    tier: ModelTier = "core"
+    variables: list[str] = Field(default_factory=list)  # variables the source can provide
 
 
 class ModelListResponse(WeatherSchema):
@@ -69,9 +88,16 @@ class ProviderForecast(WeatherSchema):
     provider: str
     status: ProviderStatus
     source: str | None = None
+    source_url: str | None = None
     init_time: datetime | None = None
     forecast: list[ForecastRecord] = Field(default_factory=list)
     error: str | None = None
+    source_type: str | None = None
+    is_live: bool = False
+    tier: ModelTier = "core"
+    retrieved_at: datetime | None = None
+    variables: list[str] = Field(default_factory=list)  # variables actually retrieved (non-empty)
+    provenance: Provenance = Field(default_factory=dict)
 
 
 class AllModelsForecastResponse(WeatherSchema):

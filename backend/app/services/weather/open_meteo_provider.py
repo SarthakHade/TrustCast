@@ -5,10 +5,14 @@ from typing import Any
 
 import httpx
 
+from app.config import OPEN_METEO_SINGLE_RUNS_URL
 from app.schemas.weather import ForecastRecord, ModelDescriptor, ProviderForecast
-from app.services.weather.forecast_provider import ForecastProvider, ProviderDataError
+from app.services.weather.forecast_provider import (
+    ForecastProvider,
+    ProviderDataError,
+    ProviderWaitingError,
+)
 
-SINGLE_RUNS_ENDPOINT = "https://single-runs-api.open-meteo.com/v1/forecast"
 HOURLY_VARIABLES = (
     "temperature_2m",
     "precipitation",
@@ -24,7 +28,11 @@ class OpenMeteoSingleRunProvider(ForecastProvider):
     run_interval_hours = 6
 
     def __init__(self, descriptor: ModelDescriptor, source_model: str) -> None:
-        self.descriptor = descriptor
+        self.descriptor = descriptor.model_copy(update={
+            "source_type": "live_api",
+            "is_live": True,
+            "variables": descriptor.variables or ["temperature", "precipitation", "wind_speed", "humidity"],
+        })
         self.source_model = source_model
 
     def _candidate_runs(self, now: datetime | None = None) -> list[datetime]:
@@ -39,6 +47,7 @@ class OpenMeteoSingleRunProvider(ForecastProvider):
         self, latitude: float, longitude: float, forecast_days: int
     ) -> ProviderForecast:
         errors: list[str] = []
+        not_published = 0
         async with httpx.AsyncClient(timeout=20.0) as client:
             for init_time in self._candidate_runs():
                 params = {
@@ -51,13 +60,20 @@ class OpenMeteoSingleRunProvider(ForecastProvider):
                     "run": init_time.strftime("%Y-%m-%dT%H:%M"),
                 }
                 try:
-                    response = await client.get(SINGLE_RUNS_ENDPOINT, params=params)
+                    response = await client.get(OPEN_METEO_SINGLE_RUNS_URL, params=params)
+                    if response.status_code == 400 and "not available" in response.text:
+                        not_published += 1  # this run is not published yet; try an older one
                     response.raise_for_status()
                     payload = response.json()
                     return self.normalize_payload(payload, init_time)
                 except (httpx.HTTPError, ValueError, ProviderDataError) as exc:
                     errors.append(str(exc))
 
+        if not_published == len(self._candidate_runs()):
+            raise ProviderWaitingError(
+                f"No recent {self.descriptor.name} run is published yet (checked the last "
+                f"{not_published} cycles); retried on the next refresh."
+            )
         raise ProviderDataError(
             "No usable recent model run was returned by Open-Meteo. "
             f"Last error: {errors[-1] if errors else 'unknown error'}"
@@ -119,14 +135,31 @@ class OpenMeteoSingleRunProvider(ForecastProvider):
                 )
             )
 
+        variables = [
+            name for name in ("temperature", "precipitation", "wind_speed", "humidity")
+            if any(value is not None for value in variable_series[name])
+        ]
         return ProviderForecast(
             model=self.descriptor.name,
             model_type=self.descriptor.model_type,
             provider=self.descriptor.provider,
             status="live",
             source=self.descriptor.source,
+            source_url=self.descriptor.source_url,
             init_time=init_time,
             forecast=records,
+            source_type="live_api",
+            is_live=True,
+            tier=self.descriptor.tier,
+            retrieved_at=datetime.now(UTC),
+            variables=variables,
+            provenance={
+                "api": "Open-Meteo Single Runs API",
+                "source_model": self.source_model,
+                "run": init_time.isoformat(),
+                "grid_latitude": source_latitude,
+                "grid_longitude": source_longitude,
+            },
         )
 
     @staticmethod

@@ -35,4 +35,4 @@ async def test_info_endpoint():
     assert data["problem_statement"] == "SIH26081"
     assert data["title"] == "Hybrid AI–NWP Multi-Model Forecast Blending System"
     assert data["team"] == "VisionCrafters"
-    assert data["stage"] == "foundation"
+    assert data["stage"] == "risk_detection"

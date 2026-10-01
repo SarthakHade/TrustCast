@@ -128,14 +128,15 @@ async def test_model_registry_and_locations_endpoints():
 
     assert models_response.status_code == 200
     models = models_response.json()["models"]
-    assert len(models) == 5
-    assert {model["name"] for model in models} == {
-        "ECMWF IFS",
-        "NOAA GFS",
-        "NCUM",
-        "ECMWF AIFS",
-        "GraphCast / Pangu-Weather",
-    }
+    by_name = {model["name"]: model for model in models}
+    assert list(by_name) == [
+        "ECMWF IFS", "NOAA GFS", "ECMWF AIFS", "NCUM-G", "DWD AICON", "NOAA AIGEFS",
+        "DWD ICON", "GraphCast", "Pangu-Weather",
+    ]
+    assert by_name["GraphCast"]["status"] == "inactive" and by_name["GraphCast"]["tier"] == "optional"
+    assert by_name["Pangu-Weather"]["status"] == "inactive"
+    assert by_name["DWD ICON"]["tier"] == "optional"
+    assert all(m["status"] != "demo" for m in models)
     assert locations_response.status_code == 200
     assert [location["name"] for location in locations_response.json()] == [
         "Mumbai",
@@ -153,3 +154,28 @@ async def test_weather_endpoint_validates_coordinates():
         response = await client.get("/api/weather/all-models?latitude=100&longitude=72")
 
     assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_ncum_adapter_is_honest_and_never_returns_values(monkeypatch):
+    """NCUM-G is unavailable: no values, official source checked and reported, excluded from scoring."""
+    from app.services.weather.ncum_provider import NCUMProvider
+
+    async def fake_probe(self):  # test fixture: stands in for the official NCMRWF API call
+        return {"official_api": "fixture", "machine_readable_point_data": False}
+
+    monkeypatch.setattr(NCUMProvider, "probe", fake_probe)
+    from app.services.weather.weather_service import weather_service
+    weather_service.probe_cache._entries.clear()
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/api/weather/forecast?latitude=19.076&longitude=72.8777&model=NCUM-G")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "unavailable"
+    assert data["forecast"] == []
+    assert data["provider"] == "NCMRWF / MoES"
+    assert data["source_url"] == "https://nwp.ncmrwf.gov.in/HomePage/NEPS-prod-1.php"
+    assert "no machine-readable NCUM-G point-forecast feed" in data["error"]
+    assert data["provenance"]["machine_readable_point_data"] is False

@@ -1,1 +1,126 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-ink-950: #070b14;
+  --color-ink-900: #0b1120;
+  --color-ink-800: #121a2d;
+  --color-mist: #aab4c8;
+  --color-cream: #fbf1de;
+  --color-sage: #7cc9a6;
+  --color-amberish: #e8b86a;
+  --color-coral: #e57b72;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: #0a0f1c;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: #eef1f7;
+  background:
+    radial-gradient(1200px 700px at 8% -10%, rgba(92, 104, 196, 0.28), transparent 60%),
+    radial-gradient(900px 600px at 100% 12%, rgba(64, 128, 150, 0.16), transparent 60%),
+    radial-gradient(1000px 800px at 85% 110%, rgba(190, 110, 72, 0.14), transparent 60%),
+    linear-gradient(180deg, #0b1122 0%, #0a0f1c 45%, #0b0f18 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Very subtle film grain, static (no animation). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+@layer components {
+  /* Main surface: large rounded glass card. */
+  .card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 30px 80px -45px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .card-soft {
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .glass {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  .eyebrow {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #9aa6bd;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  .field {
+    width: 100%;
+    appearance: none;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background-color: rgba(8, 12, 24, 0.65);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aab4c8' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding: 0.7rem 2.2rem 0.7rem 0.9rem;
+    font-size: 0.95rem;
+    color: #eef1f7;
+  }
+  .field option {
+    background: #0b1120;
+    color: #eef1f7;
+  }
+}
+
+/* Visible keyboard focus everywhere. */
+:where(a, button, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid #fbf1de;
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+details > summary {
+  cursor: pointer;
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
