@@ -1,13 +1,14 @@
-import { DISAGREEMENT_TEXT, LEVEL_HEX, VARIABLE_LABEL, fmt, formatShort, formatTime, modelHex, nowIndexOf } from '../lib'
-import type { BlendResponse, Location, Model, ProviderForecast, UncertaintyResponse, Variable } from '../types'
+import { AGREEMENT, LEVEL_HEX, VARIABLE_LABEL, fmt, formatCoords, formatTime, modelHex, nowIndexOf, riskHeadline, shortName } from '../lib'
+import type { BlendResponse, Location, ProviderForecast, RiskResponse, SelectedLocation, UncertaintyResponse, Variable } from '../types'
 import { Sparkline } from './charts'
-import { CloudIcon, LevelBadge, ModelDot, PartlyCloudyIcon, RainIcon, SparkIcon, SunIcon } from './ui'
+import { LocationSearch } from './LocationSearch'
+import { CloudIcon, ModelDot, MoonIcon, Notice, PartlyCloudyIcon, RainIcon, SunIcon } from './ui'
 
 type HeroProps = {
   backendStatus: string
   locations: Location[]
-  locationName: string
-  onLocation: (name: string) => void
+  selected: SelectedLocation | null
+  onLocation: (location: SelectedLocation) => void
   forecastDays: number
   onForecastDays: (days: number) => void
   variable: Variable
@@ -16,16 +17,19 @@ type HeroProps = {
   onLeadDay: (day: number) => void
   loadingForecasts: boolean
   onRefresh: () => void
-  models: Model[]
   results: ProviderForecast[]
   blend: BlendResponse | null
   uncertainty: UncertaintyResponse | null
+  risks: RiskResponse | null
   loading: boolean
   openedAt: number
 }
 
-/** Sky icon chosen from live Step 2 precipitation / humidity near "now" (mean over live models). */
-function skyIcon(results: ProviderForecast[], openedAt: number) {
+/**
+ * Current conditions from the live model data near "now" (mean over live models): rain amount and
+ * humidity only. The icon is a simple cue; the label states only what the data supports.
+ */
+function currentConditions(results: ProviderForecast[], openedAt: number) {
   const nearNow = results
     .filter((r) => r.status === 'live')
     .map((r) => r.forecast.find((rec) => new Date(rec.valid_time).getTime() >= openedAt - 30 * 60 * 1000))
@@ -37,51 +41,61 @@ function skyIcon(results: ProviderForecast[], openedAt: number) {
   const rain = mean('precipitation')
   const humidity = mean('humidity')
   if (rain === null && humidity === null) return null
-  const label = `Sky icon from live model data: mean precipitation ${fmt(rain)} mm, humidity ${fmt(humidity, 0)}%`
-  const cls = 'h-24 w-24 text-cream/90 sm:h-28 sm:w-28'
-  if (rain !== null && rain >= 0.2) return <RainIcon className={cls} label={label} />
-  if (humidity !== null && humidity >= 85) return <CloudIcon className={cls} label={label} />
-  if (humidity !== null && humidity >= 65) return <PartlyCloudyIcon className={cls} label={label} />
-  return <SunIcon className={cls} label={label} />
+  const hour = nearNow[0] ? new Date(nearNow[0].valid_time).getHours() : 12
+  const night = hour < 6 || hour >= 18
+  const cls = 'h-20 w-20 text-cream/85 sm:h-24 sm:w-24'
+  const wet = rain !== null && rain >= 0.2
+  const label = wet ? `Rain · ${fmt(rain)} mm/h` : `No rain expected${humidity !== null ? ` · humidity ${fmt(humidity, 0)}%` : ''}`
+  let icon
+  if (wet) icon = <RainIcon className={cls} />
+  else if (humidity !== null && humidity >= 85) icon = <CloudIcon className={cls} />
+  else if (night) icon = <MoonIcon className={cls} />
+  else if (humidity !== null && humidity >= 65) icon = <PartlyCloudyIcon className={cls} />
+  else icon = <SunIcon className={cls} />
+  return { icon, label }
+}
+
+/** The most serious current risk, in words (levels come from the backend risk engine). */
+function riskStatus(risks: RiskResponse | null) {
+  const ok = risks?.risks.filter((r) => r.status === 'ok' && r.level) ?? []
+  if (!ok.length) return null
+  const worst = ok.find((r) => r.level === 'HIGH') ?? ok.find((r) => r.level === 'ELEVATED')
+  if (!worst) return { text: 'No significant weather risk', hex: LEVEL_HEX.NORMAL }
+  return { text: riskHeadline(worst), hex: LEVEL_HEX[worst.level ?? 'NORMAL'] }
 }
 
 export function Hero(props: HeroProps) {
-  const { blend, uncertainty, openedAt } = props
+  const { blend, uncertainty, openedAt, selected } = props
   const points = blend?.forecast ?? []
   const nowIndex = Math.max(0, nowIndexOf(points, openedAt))
   const now = points[nowIndex]
   const unc = uncertainty?.forecast.find((u) => u.valid_time === now?.valid_time)
   const upcoming = points.slice(nowIndex)
-  const connected = props.models.filter((m) => m.status !== 'inactive').length
   const contributing = blend?.models_used ?? []
+  const unit = blend?.unit ?? ''
+  const conditions = currentConditions(props.results, openedAt)
+  const risk = riskStatus(props.risks)
+  const level = unc?.disagreement_level
 
   return (
-    <section className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-6">
-      {/* Mobile order: headline → forecast card → controls. Desktop: two columns. */}
-      <div className="lg:col-span-6 lg:row-start-1 xl:col-span-7">
-          <p className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span>SIH26081 · VisionCrafters</span>
-            <span className="h-px w-6 bg-white/20" aria-hidden="true" />
-            <span className={props.backendStatus === 'Connected' ? 'text-sage' : 'text-coral'}>
-              ● Backend {props.backendStatus === 'Connected' ? 'connected' : props.backendStatus.toLowerCase()}
-            </span>
-          </p>
-          <h1 className="mt-5 text-[2.6rem] font-light leading-[1.05] tracking-tight text-white sm:text-6xl xl:text-7xl">
-            Know which forecast to trust, <span className="text-cream">where and when.</span>
-          </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-mist sm:text-lg">
-            Adaptive AI–NWP forecast blending with historical verification, model reliability, uncertainty and extreme-weather risk.
-          </p>
-      </div>
+    <section className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8" aria-label="Current forecast">
+      <h1 className="sr-only">TrustCast forecast dashboard</h1>
 
-        <form className="card glass order-3 self-end p-4 sm:p-5 lg:order-none lg:col-span-6 lg:row-start-2 xl:col-span-7" aria-label="Forecast controls" onSubmit={(e) => { e.preventDefault(); props.onRefresh() }}>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <label className="col-span-2 text-xs font-semibold text-mist md:col-span-1">
-              Location
-              <select className="field mt-1.5" value={props.locationName} onChange={(e) => props.onLocation(e.target.value)}>
-                {props.locations.map((l) => <option key={l.name}>{l.name}</option>)}
-              </select>
-            </label>
+      <form
+        className="card-soft flex flex-col gap-5 p-5 sm:p-6 lg:col-span-5"
+        aria-label="Forecast controls"
+        onSubmit={(e) => { e.preventDefault(); props.onRefresh() }}
+      >
+        {props.backendStatus !== 'Connected' && props.backendStatus !== 'checking' && (
+          <Notice>Forecast service {props.backendStatus.toLowerCase()}. Start the TrustCast backend and reload.</Notice>
+        )}
+        <div>
+          <p className="eyebrow mb-2">Location</p>
+          <LocationSearch selected={selected} presets={props.locations} onSelect={props.onLocation} />
+        </div>
+        <div>
+          <p className="eyebrow mb-2">Forecast settings</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
             <label className="text-xs font-semibold text-mist">
               Forecast days
               <select className="field mt-1.5" value={props.forecastDays} onChange={(e) => props.onForecastDays(Number(e.target.value))}>
@@ -95,84 +109,93 @@ export function Hero(props: HeroProps) {
                 <option value={2}>Day 2 (~48 h)</option>
               </select>
             </label>
-            <label className="col-span-2 text-xs font-semibold text-mist md:col-span-1">
+            <label className="text-xs font-semibold text-mist sm:col-span-2 lg:col-span-1">
               Variable
               <select className="field mt-1.5" value={props.variable} onChange={(e) => props.onVariable(e.target.value as Variable)}>
                 {(Object.keys(VARIABLE_LABEL) as Variable[]).map((v) => <option key={v} value={v}>{VARIABLE_LABEL[v]}</option>)}
               </select>
             </label>
           </div>
-          <button
-            type="submit"
-            className="mt-4 w-full rounded-2xl bg-cream px-5 py-3 text-sm font-bold text-ink-900 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={props.loadingForecasts || props.locations.length === 0}
-          >
-            {props.loadingForecasts ? 'Loading live forecasts…' : 'Load forecasts'}
-          </button>
-        </form>
+        </div>
+        <button
+          type="submit"
+          className="mt-auto w-full rounded-[14px] bg-cream px-6 py-3 text-sm font-bold text-ink-900 shadow-[0_10px_30px_-12px_rgba(251,241,222,0.6)] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={props.loadingForecasts || !selected}
+        >
+          {props.loadingForecasts ? 'Loading…' : 'Load forecasts'}
+        </button>
+      </form>
 
       <article
-        className="card relative order-2 flex min-h-[26rem] flex-col justify-between overflow-hidden p-6 sm:p-8 lg:order-none lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 xl:col-span-5 xl:col-start-8"
+        className="card relative flex min-h-[25rem] flex-col justify-between p-6 sm:p-8 lg:col-span-7"
         style={{ background: 'linear-gradient(160deg, rgba(58,62,140,0.85) 0%, rgba(92,78,150,0.55) 45%, rgba(214,146,120,0.55) 100%)' }}
-        aria-label={`Current TrustCast forecast for ${props.locationName}`}
+        aria-label={`TrustCast forecast for ${selected?.name ?? 'the selected location'}`}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h2 className="truncate text-2xl font-medium text-white sm:text-3xl">{props.locationName}</h2>
-            <p className="mt-1 text-sm text-white/70">{now ? formatTime(now.valid_time) : 'Loading forecast…'}</p>
-          </div>
-          <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold text-white/80">
-            TrustCast blend <SparkIcon className="h-4 w-4 text-cream" />
-          </span>
+        <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="truncate text-2xl font-medium text-white sm:text-3xl">{selected?.name ?? '—'}</h2>
+          {selected && (
+            <p className="mt-0.5 truncate text-xs text-white/70" title={selected.display_name}>
+              {selected.area && <span>{selected.area} · </span>}
+              <span className="num">{formatCoords(selected.latitude, selected.longitude)}</span>
+            </p>
+          )}
+          <p className="mt-1 text-sm text-white/70">{now ? formatTime(now.valid_time) : props.loading ? 'Updating forecast…' : '—'}</p>
+        </div>
+        {risk && (
+          <a
+            href="#risk"
+            className="flex shrink-0 items-center gap-1.5 rounded-full bg-black/25 px-3 py-1 text-[11px] font-semibold text-white/90 hover:bg-black/35"
+          >
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: risk.hex }} aria-hidden="true" />{risk.text}
+          </a>
+        )}
         </div>
 
         <div className="mt-6 flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="num text-7xl font-extralight leading-none tracking-tighter text-white sm:text-8xl">
-              {now?.blended_value !== null && now ? fmt(now.blended_value) : '—'}
-              <span className="ml-1 align-top text-2xl font-light text-white/80 sm:text-3xl">{blend?.unit ?? ''}</span>
+              {now && now.blended_value !== null ? fmt(now.blended_value) : '—'}
+              <span className="ml-1 align-top text-2xl font-light text-white/80 sm:text-3xl">{unit}</span>
             </p>
-            <p className="mt-3 text-base text-white/85">{VARIABLE_LABEL[props.variable]} · trust-weighted blend</p>
+            <p className="mt-3 text-base text-white/85">{VARIABLE_LABEL[props.variable]}</p>
+            {conditions && <p className="mt-1 text-sm text-white/65">{conditions.label}</p>}
           </div>
-          <div className="hidden shrink-0 sm:block">{skyIcon(props.results, openedAt)}</div>
+          {conditions && <div className="hidden shrink-0 sm:block" aria-hidden="true">{conditions.icon}</div>}
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-3">
           <div className="rounded-2xl bg-black/20 p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Prediction range</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Forecast range</p>
             <p className="num mt-1 text-sm font-semibold text-white">
-              {unc?.historical_lower !== null && unc?.historical_lower !== undefined ? `${fmt(unc.historical_lower)} – ${fmt(unc.historical_upper)} ${blend?.unit}` : '—'}
+              {unc?.historical_lower != null && unc.historical_upper != null ? `${fmt(unc.historical_lower)}–${fmt(unc.historical_upper)} ${unit}` : '—'}
             </p>
           </div>
           <div className="rounded-2xl bg-black/20 p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Model disagreement</p>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              {unc?.disagreement_level ? <LevelBadge level={unc.disagreement_level} hex={LEVEL_HEX[unc.disagreement_level]} /> : <span className="text-sm text-white">—</span>}
-              <span className="num text-xs text-white/75" title={unc?.disagreement_level ? DISAGREEMENT_TEXT[unc.disagreement_level] : undefined}>
-                {unc?.model_spread !== null && unc?.model_spread !== undefined ? `${fmt(unc.model_spread)} ${blend?.unit} spread` : ''}
-              </span>
-            </div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Forecast agreement</p>
+            <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-white">
+              {level ? <><span className="h-2 w-2 rounded-full" style={{ background: LEVEL_HEX[level] }} aria-hidden="true" />{AGREEMENT[level].short}</> : '—'}
+            </p>
           </div>
           <div className="col-span-2 rounded-2xl bg-black/20 p-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
-                Next {upcoming.length} h{upcoming.length ? ` · until ${formatShort(upcoming[upcoming.length - 1].valid_time)}` : ''}
+                {contributing.length > 0 ? `${contributing.length} forecast models contributing` : 'Forecast models'}
               </p>
-              <p className="text-[11px] text-white/60">
-                {contributing.length} / {connected} models contributing
-              </p>
+              {upcoming.length > 0 && (
+                <p className="num text-[11px] text-white/60">Next {upcoming.length} hours</p>
+              )}
             </div>
-            <div className="mt-2 h-12" >
+            <div className="mt-2 h-12">
               <Sparkline values={upcoming.map((p) => p.blended_value)} color="#fbf1de" label={`TrustCast ${VARIABLE_LABEL[props.variable].toLowerCase()} for the next ${upcoming.length} hours`} />
             </div>
             <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
               {contributing.map((m) => (
-                <span key={m.model} className="flex items-center gap-1.5 text-xs text-white/85"><ModelDot hex={modelHex(m.model)} />{m.model}</span>
+                <span key={m.model} className="flex items-center gap-1.5 text-xs text-white/85" title={m.model}><ModelDot hex={modelHex(m.model)} />{shortName(m.model)}</span>
               ))}
             </div>
           </div>
         </div>
-        {props.loading && !blend && <p className="mt-3 text-xs text-white/70" role="status">Blending live forecasts…</p>}
       </article>
     </section>
   )

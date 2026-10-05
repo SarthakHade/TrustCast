@@ -29,3 +29,6 @@ data/*.db
 
 # Logs
 *.log
+
+# Skill engine download cache (regenerated from the public APIs)
+backend/data/cache/

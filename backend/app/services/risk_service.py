@@ -180,16 +180,18 @@ class RiskService:
         self.uncertainty = uncertainty
 
     async def get_risks(
-        self, location: str, forecast_days: int, lead_day: int, days: int, now: datetime | None = None
+        self, location: dict | str, forecast_days: int, lead_day: int, days: int, now: datetime | None = None
     ) -> RiskResponse:
         current_hour = (now or datetime.now(UTC)).replace(minute=0, second=0, microsecond=0)
         samples_by_variable: dict[str, list[Sample] | str] = {}
-        resolved_location = location
+        resolved_location = location["name"] if isinstance(location, dict) and location.get("name") else str(location)
+        coords: tuple[float | None, float | None] = (None, None)
         # Sequential on purpose: each variable's history is fetched once and cached (gentle on the free API).
         for variable in dict.fromkeys(rule.variable for rule in RISK_RULES):
             try:
                 blend = await self.blend.get_blend(location, variable, forecast_days, lead_day, days)
                 resolved_location = blend.location
+                coords = (blend.latitude, blend.longitude)
                 unc = await self.uncertainty.get_uncertainty(location, variable, forecast_days, lead_day, days)
             except KeyError:
                 raise
@@ -211,6 +213,8 @@ class RiskService:
         times = [p.valid_time for r in usable for p in r.timeline]
         return RiskResponse(
             location=resolved_location,
+            latitude=coords[0],
+            longitude=coords[1],
             forecast_days=forecast_days,
             lead_day=lead_day,
             status="ok" if usable else "insufficient_data",

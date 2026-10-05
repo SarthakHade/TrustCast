@@ -20,6 +20,7 @@ import httpx
 
 from app.config import OPEN_METEO_ENSEMBLE_META_URL, OPEN_METEO_ENSEMBLE_URL
 from app.schemas.weather import ForecastRecord, ModelDescriptor, ProviderForecast
+from app.services.location_service import annotate_grid_distance
 from app.services.weather.forecast_provider import (
     ForecastProvider,
     ProviderDataError,
@@ -78,7 +79,9 @@ class AIGEFSProvider(ForecastProvider):
                 },
             )
             data_response.raise_for_status()
-        return self.normalize(meta_response.json(), data_response.json(), datetime.now(UTC))
+        forecast = self.normalize(meta_response.json(), data_response.json(), datetime.now(UTC))
+        annotate_grid_distance(forecast.provenance, latitude, longitude)
+        return forecast
 
     def normalize(self, meta: Any, payload: Any, now: datetime) -> ProviderForecast:
         if not isinstance(meta, dict) or not isinstance(meta.get("last_run_initialisation_time"), int):

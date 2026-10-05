@@ -1,7 +1,9 @@
 """Pydantic schemas for Step 5 trust-weighted forecast blending."""
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
+
+from pydantic import Field
 
 from app.schemas.weather import ProviderStatus, WeatherSchema
 
@@ -17,6 +19,10 @@ class BlendPoint(WeatherSchema):
     contributors: dict[str, float]
     effective_weights: dict[str, float]
     renormalized: bool
+    # Adaptive method only: bias-corrected model values actually blended, lead day and rule-based regime used.
+    corrected: dict[str, float] = Field(default_factory=dict)
+    lead_day: int | None = None
+    regime: str | None = None
 
 
 class BlendModel(WeatherSchema):
@@ -48,3 +54,5 @@ class BlendResponse(WeatherSchema):
     models_used: list[BlendModel]
     excluded_models: list[ExcludedModel]
     forecast: list[BlendPoint]
+    # Adaptive (bias-corrected, stacked) configuration actually used, or why the previous weights were used.
+    adaptive: dict[str, Any] | None = None

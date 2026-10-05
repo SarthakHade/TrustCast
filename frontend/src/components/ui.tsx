@@ -48,6 +48,9 @@ export const RainIcon = (p: IconProps) => (
     <line x1="17" y1="34" x2="15" y2="39" /><line x1="24" y1="34" x2="22" y2="39" /><line x1="31" y1="34" x2="29" y2="39" />
   </Svg>
 )
+export const MoonIcon = (p: IconProps) => (
+  <Svg {...p}><path d="M31 9a14 14 0 1 0 8 25A12 12 0 0 1 31 9Z" /></Svg>
+)
 export const WindIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M8 18h21a5 5 0 1 0-5-5" /><path d="M8 26h29a5 5 0 1 1-5 5" /><path d="M8 34h14" />
@@ -81,16 +84,16 @@ export const AlertIcon = (p: IconProps) => (
 )
 
 // ---------- Layout primitives ----------
-export function SectionHeader({ index, question, title, children }: { index: string; question: string; title: string; children?: ReactNode }) {
+export function SectionHeader({ index, question, title, titleId, children }: { index: string; question: string; title: string; titleId?: string; children?: ReactNode }) {
   return (
-    <header className="mb-6 flex flex-col gap-4 sm:mb-8 lg:flex-row lg:items-end lg:justify-between">
+    <header className="mb-6 flex flex-col gap-3 sm:mb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
       <div className="max-w-3xl">
         <p className="eyebrow flex items-center gap-3">
           <span className="num text-cream/80">{index}</span>
           <span className="h-px w-8 bg-white/20" aria-hidden="true" />
           <span>{question}</span>
         </p>
-        <h2 className="mt-3 text-3xl font-light tracking-tight text-white sm:text-4xl">{title}</h2>
+        <h2 id={titleId} className="mt-3 text-3xl font-light tracking-tight text-white sm:text-4xl">{title}</h2>
       </div>
       {children}
     </header>
@@ -100,7 +103,7 @@ export function SectionHeader({ index, question, title, children }: { index: str
 /** Vertical connector between story chapters. */
 export function Connector() {
   return (
-    <div className="flex justify-center py-6 sm:py-8" aria-hidden="true">
+    <div className="flex justify-center py-8 sm:py-12" aria-hidden="true">
       <div className="flex flex-col items-center gap-1.5">
         <span className="h-10 w-px bg-gradient-to-b from-transparent via-white/25 to-white/5" />
         <span className="h-1.5 w-1.5 rounded-full bg-cream/60" />
@@ -133,9 +136,9 @@ export function Loading({ children }: { children: ReactNode }) {
 
 const STATUS_STYLE: Record<ModelStatus, { label: string; dot: string; text: string }> = {
   live: { label: 'Live', dot: 'bg-sage', text: 'text-sage' },
-  waiting: { label: 'Waiting for live model run', dot: 'bg-amberish', text: 'text-amberish' },
+  waiting: { label: 'Waiting for run', dot: 'bg-amberish', text: 'text-amberish' },
   unavailable: { label: 'Unavailable', dot: 'bg-amberish', text: 'text-amberish' },
-  inactive: { label: 'Optional · not running', dot: 'bg-slate-500', text: 'text-slate-400' },
+  inactive: { label: 'Not running', dot: 'bg-slate-500', text: 'text-slate-400' },
   data_unavailable: { label: 'Data unavailable', dot: 'bg-amberish', text: 'text-amberish' },
   adapter_ready: { label: 'Adapter ready', dot: 'bg-slate-400', text: 'text-slate-300' },
   error: { label: 'Error', dot: 'bg-coral', text: 'text-coral' },

@@ -166,7 +166,7 @@ class FakeTrust:
             return ModelTrust(model=name, model_type="x", status="live", included=weight is not None, weight=weight,
                               weight_percent=None if weight is None else weight * 100, reasons=[reason] if reason else [])
         return TrustResponse(
-            location=location, variable=variable, unit="°C", lead_day=lead_day, status="ok", historical_period_start=None,
+            location=location["name"] if isinstance(location, dict) else location, variable=variable, unit="°C", lead_day=lead_day, status="ok", historical_period_start=None,
             historical_period_end=None, historical_days=21, recent_days=7, method="x", formula=[],
             models=[row("A", 0.5), row("B", 0.3), row("C", 0.2),
                     row("D", None, "Forecast available · reliability not yet calibrated (no archived forecasts to verify); not weighted")],

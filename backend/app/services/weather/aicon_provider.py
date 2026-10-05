@@ -23,7 +23,7 @@ from app.services.weather.forecast_provider import ForecastProvider, ProviderUna
 
 REASON = (
     "Official DWD AICON GRIB2 is on the native ICON icosahedral grid (CCSDS-compressed); "
-    "point extraction needs a GRIB decoder and grid file that are not part of this prototype."
+    "point extraction needs a GRIB decoder and grid file that are not currently enabled in TrustCast."
 )
 
 
@@ -43,7 +43,7 @@ class AICONProvider(ForecastProvider):
         source_url="https://opendata.dwd.de/weather/nwp/v1/m/aicon/",
         source_type="official_catalogue",
         variables=["temperature", "precipitation", "wind_speed", "humidity"],
-        note="Official run published; point extraction from the native icosahedral GRIB2 is not enabled in this prototype.",
+        note="Official run published; point extraction from the native icosahedral GRIB2 is not currently enabled in TrustCast.",
     )
 
     async def get_forecast(self, latitude: float, longitude: float, forecast_days: int) -> ProviderForecast:

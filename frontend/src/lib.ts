@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { DisagreementLevel, RiskLevel, Variable } from './types'
+import type { DisagreementLevel, RiskIndicator, RiskLevel, Variable } from './types'
 
 export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -26,6 +26,19 @@ export const MODEL_HEX: Record<string, string> = {
 export const BLEND_HEX = '#fbf1de'
 export const modelHex = (model: string) => MODEL_HEX[model] ?? '#94a3b8'
 
+/** The deterministic models shown as forecast cards (the models the blend draws on). */
+export const PRIMARY_SOURCES = ['ECMWF IFS', 'NOAA GFS', 'ECMWF AIFS', 'DWD ICON']
+
+const SHORT_NAME: Record<string, string> = {
+  'ECMWF IFS': 'IFS',
+  'NOAA GFS': 'GFS',
+  'ECMWF AIFS': 'AIFS',
+  'DWD ICON': 'ICON',
+  'NOAA AIGEFS': 'AIGEFS',
+  'DWD AICON': 'AICON',
+}
+export const shortName = (model: string) => SHORT_NAME[model] ?? model
+
 export const LEVEL_HEX: Record<RiskLevel | DisagreementLevel, string> = {
   NORMAL: '#7cc9a6',
   LOW: '#7cc9a6',
@@ -35,11 +48,61 @@ export const LEVEL_HEX: Record<RiskLevel | DisagreementLevel, string> = {
   LIMITED_DATA: '#94a3b8',
 }
 
-export const DISAGREEMENT_TEXT: Record<DisagreementLevel, string> = {
-  LOW: 'Models are closely aligned.',
-  MEDIUM: 'Models show moderate divergence.',
-  HIGH: 'Models show significant divergence.',
-  LIMITED_DATA: 'Only one model is available; disagreement cannot be estimated.',
+// ---- Plain-language wording for backend results (display only; the levels come from the API) ----
+export const AGREEMENT: Record<DisagreementLevel, { label: string; short: string; text: string }> = {
+  LOW: { label: 'Low uncertainty', short: 'Models agree', text: 'Models are closely aligned.' },
+  MEDIUM: { label: 'Medium uncertainty', short: 'Some disagreement', text: 'Some variation between forecasts.' },
+  HIGH: { label: 'High uncertainty', short: 'High disagreement', text: 'Models disagree significantly. Forecast may change.' },
+  LIMITED_DATA: { label: 'Limited data', short: 'Limited data', text: 'Only one model is available, so agreement cannot be assessed.' },
+}
+
+export type PerformanceLabel = 'Strong' | 'Good' | 'Moderate' | 'Limited'
+export const PERFORMANCE_HEX: Record<PerformanceLabel, string> = {
+  Strong: '#7cc9a6',
+  Good: '#9fd0c0',
+  Moderate: '#e8b86a',
+  Limited: '#e57b72',
+}
+/** Track-record label from the backend verification: a model's average error relative to the best model here. */
+export function performanceLabel(mae: number, bestMae: number): PerformanceLabel {
+  const ratio = bestMae > 0 ? mae / bestMae : 1
+  if (ratio <= 1.15) return 'Strong'
+  if (ratio <= 1.5) return 'Good'
+  if (ratio <= 2) return 'Moderate'
+  return 'Limited'
+}
+
+const RISK_NAME: Record<string, string> = { HEAT: 'Heat', COLD: 'Cold', HEAVY_RAIN: 'Heavy rain', HIGH_WIND: 'High wind' }
+export const riskName = (r: RiskIndicator) => RISK_NAME[r.risk_type] ?? r.title
+
+/** One plain sentence per level; the level itself comes from the backend risk engine. */
+export function riskHeadline(r: RiskIndicator) {
+  const name = riskName(r).toLowerCase()
+  if (r.level === 'HIGH') return `High ${name} risk`
+  if (r.level === 'ELEVATED') return `Elevated ${name} risk`
+  return `No significant ${name} risk`
+}
+
+/**
+ * In-app alert state for HIGH risks only (levels from the backend risk engine). The key identifies the
+ * location + hazards + peak times, so re-renders and reloads of the same result never re-show a dismissed alert.
+ */
+export function highRiskAlert(
+  risks: { risks: RiskIndicator[] } | null,
+  location: { latitude: number; longitude: number } | null,
+  loading: boolean,
+  dismissed: string[],
+) {
+  const high = !loading && risks && location ? risks.risks.filter((r) => r.status === 'ok' && r.level === 'HIGH') : []
+  const key = location ? `${location.latitude},${location.longitude}|${high.map((r) => `${r.risk_type}@${r.peak_time}`).join(',')}` : ''
+  return { risks: high, key, show: high.length > 0 && !dismissed.includes(key) }
+}
+
+/** When the worst conditions are expected, in words. */
+export function riskWhen(r: RiskIndicator) {
+  if (!r.peak_time) return ''
+  if (r.aggregation === 'sum_24h') return `in the 24 hours to ${formatShort(r.peak_time)}`
+  return `around ${formatShort(r.peak_time)}`
 }
 
 export const VARIABLE_LABEL: Record<Variable, string> = {
@@ -48,13 +111,10 @@ export const VARIABLE_LABEL: Record<Variable, string> = {
   wind_speed: 'Wind speed (10 m)',
 }
 
-export const humanize = (value: string) => value.replace(/_/g, ' ')
 
 // ---- Formatting (display only; values stay full precision in state) ----
 export const fmt = (value: number | null | undefined, digits = 1) =>
   value === null || value === undefined || Number.isNaN(value) ? '—' : value.toFixed(digits)
-export const signed = (value: number | null | undefined, digits = 2) =>
-  value === null || value === undefined ? '—' : `${value > 0 ? '+' : ''}${value.toFixed(digits)}`
 
 export function formatTime(value: string) {
   return new Date(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })
@@ -68,8 +128,10 @@ export function formatHour(value: string) {
 export function formatDay(value: string) {
   return new Date(value).toLocaleString([], { weekday: 'short', day: 'numeric' })
 }
-export function formatDateUtc(value: string) {
-  return new Date(value).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+export function formatCoords(latitude: number, longitude: number) {
+  const lat = `${Math.abs(latitude).toFixed(4)}° ${latitude >= 0 ? 'N' : 'S'}`
+  const lon = `${Math.abs(longitude).toFixed(4)}° ${longitude >= 0 ? 'E' : 'W'}`
+  return `${lat} · ${lon}`
 }
 
 // ---- Timestamp selection shared by the blend and uncertainty sections ----

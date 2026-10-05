@@ -31,6 +31,8 @@ class ModelTrust(WeatherSchema):
 
 class TrustResponse(WeatherSchema):
     location: str
+    latitude: float | None = None
+    longitude: float | None = None
     variable: str
     unit: str
     lead_day: int

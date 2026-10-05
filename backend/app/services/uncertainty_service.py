@@ -127,6 +127,7 @@ def compute_points(
     thresholds: DisagreementThresholds | None,
     historical: HistoricalError | None,
     non_negative: bool,
+    historical_by_lead: dict[int, HistoricalError] | None = None,
 ) -> list[UncertaintyPoint]:
     result = []
     for p in points:
@@ -136,11 +137,15 @@ def compute_points(
             ))
             continue
         stats = disagreement_stats(p.contributors, p.effective_weights, p.blended_value)
+        if p.corrected:  # spread of the values actually blended around the blend
+            stats["weighted_std"] = disagreement_stats(p.corrected, p.effective_weights, p.blended_value)["weighted_std"]
         count = len(p.contributors)
         lower = upper = None
-        if historical is not None:
-            lower = p.blended_value - historical.error_p90
-            upper = p.blended_value - historical.error_p10
+        source = (historical_by_lead or {}).get(p.lead_day) if p.lead_day else None
+        source = source or historical
+        if source is not None:
+            lower = p.blended_value - source.error_p90
+            upper = p.blended_value - source.error_p10
             if non_negative:
                 lower, upper = max(lower, 0.0), max(upper, 0.0)
         result.append(UncertaintyPoint(
@@ -156,6 +161,25 @@ def compute_points(
     return result
 
 
+def oos_errors(blend) -> dict[int, HistoricalError]:
+    """Out-of-sample TrustCast errors from walk-forward validation, per lead day (adaptive blend only)."""
+    if not blend.adaptive or blend.adaptive.get("status") != "adaptive":
+        return {}
+    out = {}
+    for lead, block in blend.adaptive.get("leads", {}).items():
+        oos = block.get("oos")
+        if not oos:
+            continue
+        out[int(lead)] = HistoricalError(
+            samples=oos["samples"], rmse=oos["rmse"], mae=oos["mae"], bias=oos["bias"],
+            error_p10=oos["p10"], error_p90=oos["p90"], coverage=COVERAGE,
+            period_start=datetime.fromisoformat(oos["period_start"]), period_end=datetime.fromisoformat(oos["period_end"]),
+            note=f"Out-of-sample errors of the adaptive TrustCast blend (Day {lead}) from walk-forward validation over the last "
+                 f"{oos['samples'] // 24} verified days; the range is their 10th–90th percentile, not a calibrated probability.",
+        )
+    return out
+
+
 class UncertaintyService:
     def __init__(
         self, blend: BlendService = blend_service, performance: PerformanceService = performance_service
@@ -164,7 +188,7 @@ class UncertaintyService:
         self.performance = performance
 
     async def get_uncertainty(
-        self, location: str, variable: str, forecast_days: int, lead_day: int, days: int
+        self, location: dict | str, variable: str, forecast_days: int, lead_day: int, days: int
     ) -> UncertaintyResponse:
         blend = await self.blend.get_blend(location, variable, forecast_days, lead_day, days)
         weights = {m.model: m.trust_weight for m in blend.models_used}
@@ -174,7 +198,7 @@ class UncertaintyService:
         history_note = None
         try:
             observations, series = await self.performance.verification_series(
-                blend.location, variable, days, lead_day
+                {"name": blend.location, "latitude": blend.latitude, "longitude": blend.longitude}, variable, days, lead_day
             )
             thresholds = spread_thresholds(series, models)
             errors = historical_blend_errors(observations, series, weights)
@@ -188,7 +212,10 @@ class UncertaintyService:
         except Exception as exc:  # disagreement remains available without history
             history_note = f"Historical error unavailable: {exc}"
 
-        points = compute_points(blend.forecast, thresholds, historical, variable in NON_NEGATIVE)
+        by_lead = oos_errors(blend)
+        if by_lead:
+            historical = by_lead.get(lead_day) or next(iter(by_lead.values()))
+        points = compute_points(blend.forecast, thresholds, historical, variable in NON_NEGATIVE, by_lead)
         ensemble_sources = await self._attach_ensemble_spread(blend, variable, forecast_days, points)
         usable = [p for p in points if p.status != "insufficient_data"]
         if not usable:
@@ -210,6 +237,8 @@ class UncertaintyService:
         )
         return UncertaintyResponse(
             location=blend.location,
+            latitude=blend.latitude,
+            longitude=blend.longitude,
             variable=variable,
             unit=blend.unit,
             forecast_days=forecast_days,

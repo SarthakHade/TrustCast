@@ -100,7 +100,7 @@ class FakeTrust:
             return ModelTrust(model=name, model_type="x", status=status, included=weight is not None,
                               weight=weight, weight_percent=None if weight is None else weight * 100)
         return TrustResponse(
-            location=location, variable=variable, unit="°C", lead_day=lead_day, status="ok",
+            location=location["name"] if isinstance(location, dict) else location, variable=variable, unit="°C", lead_day=lead_day, status="ok",
             historical_period_start=None, historical_period_end=None, historical_days=21,
             recent_days=7, method="x", formula=[],
             models=[row("ECMWF IFS", 0.75), row("NOAA GFS", 0.25), row("NCUM", None, "data_unavailable")],

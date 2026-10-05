@@ -16,6 +16,7 @@ Lead time is handled by scoring the archived forecasts at the requested lead day
 
 from app.schemas.performance import ModelPerformance, PerformanceResponse
 from app.schemas.trust import ModelTrust, TrustResponse
+from app.services.location_service import LocationInput
 from app.services.performance_service import PerformanceService, performance_service
 
 EPSILON = 0.05
@@ -163,7 +164,7 @@ class TrustEngine:
         self.performance = performance
 
     async def get_trust(
-        self, location: str, variable: str, days: int, lead_day: int
+        self, location: "LocationInput", variable: str, days: int, lead_day: int
     ) -> TrustResponse:
         historical = await self.performance.evaluate(location, variable, days, lead_day)
         recent = None
@@ -172,7 +173,8 @@ class TrustEngine:
                 recent = await self.performance.evaluate(location, variable, RECENT_DAYS, lead_day)
             except Exception:
                 recent = None  # fall back to historical-only trust; never invent recent data
-        return compute_trust(historical, recent)
+        result = compute_trust(historical, recent)
+        return result.model_copy(update={"latitude": historical.latitude, "longitude": historical.longitude})
 
 
 trust_engine = TrustEngine()

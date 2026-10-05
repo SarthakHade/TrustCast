@@ -1,0 +1,1682 @@
+{
+ "resolution_deg": 1.5,
+ "bbox": [
+  6.0,
+  38.0,
+  67.0,
+  98.0
+ ],
+ "cells": [
+  {
+   "id": "6.75_93.25",
+   "latitude": 6.75,
+   "longitude": 93.25,
+   "south": 6.0,
+   "north": 7.5,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "8.25_76.75",
+   "latitude": 8.25,
+   "longitude": 76.75,
+   "south": 7.5,
+   "north": 9.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 0.24
+  },
+  {
+   "id": "8.25_78.25",
+   "latitude": 8.25,
+   "longitude": 78.25,
+   "south": 7.5,
+   "north": 9.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 0.2
+  },
+  {
+   "id": "9.75_76.75",
+   "latitude": 9.75,
+   "longitude": 76.75,
+   "south": 9.0,
+   "north": 10.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 0.8
+  },
+  {
+   "id": "9.75_78.25",
+   "latitude": 9.75,
+   "longitude": 78.25,
+   "south": 9.0,
+   "north": 10.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 0.96
+  },
+  {
+   "id": "9.75_79.75",
+   "latitude": 9.75,
+   "longitude": 79.75,
+   "south": 9.0,
+   "north": 10.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.16
+  },
+  {
+   "id": "11.25_75.25",
+   "latitude": 11.25,
+   "longitude": 75.25,
+   "south": 10.5,
+   "north": 12.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 0.16
+  },
+  {
+   "id": "11.25_76.75",
+   "latitude": 11.25,
+   "longitude": 76.75,
+   "south": 10.5,
+   "north": 12.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "11.25_78.25",
+   "latitude": 11.25,
+   "longitude": 78.25,
+   "south": 10.5,
+   "north": 12.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "11.25_79.75",
+   "latitude": 11.25,
+   "longitude": 79.75,
+   "south": 10.5,
+   "north": 12.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.6
+  },
+  {
+   "id": "11.25_93.25",
+   "latitude": 11.25,
+   "longitude": 93.25,
+   "south": 10.5,
+   "north": 12.0,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "12.75_75.25",
+   "latitude": 12.75,
+   "longitude": 75.25,
+   "south": 12.0,
+   "north": 13.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 0.72
+  },
+  {
+   "id": "12.75_76.75",
+   "latitude": 12.75,
+   "longitude": 76.75,
+   "south": 12.0,
+   "north": 13.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "12.75_78.25",
+   "latitude": 12.75,
+   "longitude": 78.25,
+   "south": 12.0,
+   "north": 13.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "12.75_79.75",
+   "latitude": 12.75,
+   "longitude": 79.75,
+   "south": 12.0,
+   "north": 13.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.76
+  },
+  {
+   "id": "12.75_93.25",
+   "latitude": 12.75,
+   "longitude": 93.25,
+   "south": 12.0,
+   "north": 13.5,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "14.25_73.75",
+   "latitude": 14.25,
+   "longitude": 73.75,
+   "south": 13.5,
+   "north": 15.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "14.25_75.25",
+   "latitude": 14.25,
+   "longitude": 75.25,
+   "south": 13.5,
+   "north": 15.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 0.96
+  },
+  {
+   "id": "14.25_76.75",
+   "latitude": 14.25,
+   "longitude": 76.75,
+   "south": 13.5,
+   "north": 15.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "14.25_78.25",
+   "latitude": 14.25,
+   "longitude": 78.25,
+   "south": 13.5,
+   "north": 15.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "14.25_79.75",
+   "latitude": 14.25,
+   "longitude": 79.75,
+   "south": 13.5,
+   "north": 15.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.8
+  },
+  {
+   "id": "15.75_73.75",
+   "latitude": 15.75,
+   "longitude": 73.75,
+   "south": 15.0,
+   "north": 16.5,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.56
+  },
+  {
+   "id": "15.75_75.25",
+   "latitude": 15.75,
+   "longitude": 75.25,
+   "south": 15.0,
+   "north": 16.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "15.75_76.75",
+   "latitude": 15.75,
+   "longitude": 76.75,
+   "south": 15.0,
+   "north": 16.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "15.75_78.25",
+   "latitude": 15.75,
+   "longitude": 78.25,
+   "south": 15.0,
+   "north": 16.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "15.75_79.75",
+   "latitude": 15.75,
+   "longitude": 79.75,
+   "south": 15.0,
+   "north": 16.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.88
+  },
+  {
+   "id": "15.75_81.25",
+   "latitude": 15.75,
+   "longitude": 81.25,
+   "south": 15.0,
+   "north": 16.5,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 0.2
+  },
+  {
+   "id": "17.25_73.75",
+   "latitude": 17.25,
+   "longitude": 73.75,
+   "south": 16.5,
+   "north": 18.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.88
+  },
+  {
+   "id": "17.25_75.25",
+   "latitude": 17.25,
+   "longitude": 75.25,
+   "south": 16.5,
+   "north": 18.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "17.25_76.75",
+   "latitude": 17.25,
+   "longitude": 76.75,
+   "south": 16.5,
+   "north": 18.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "17.25_78.25",
+   "latitude": 17.25,
+   "longitude": 78.25,
+   "south": 16.5,
+   "north": 18.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "17.25_79.75",
+   "latitude": 17.25,
+   "longitude": 79.75,
+   "south": 16.5,
+   "north": 18.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "17.25_81.25",
+   "latitude": 17.25,
+   "longitude": 81.25,
+   "south": 16.5,
+   "north": 18.0,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "17.25_82.75",
+   "latitude": 17.25,
+   "longitude": 82.75,
+   "south": 16.5,
+   "north": 18.0,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 0.52
+  },
+  {
+   "id": "18.75_72.25",
+   "latitude": 18.75,
+   "longitude": 72.25,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "18.75_73.75",
+   "latitude": 18.75,
+   "longitude": 73.75,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "18.75_75.25",
+   "latitude": 18.75,
+   "longitude": 75.25,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "18.75_76.75",
+   "latitude": 18.75,
+   "longitude": 76.75,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "18.75_78.25",
+   "latitude": 18.75,
+   "longitude": 78.25,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "18.75_79.75",
+   "latitude": 18.75,
+   "longitude": 79.75,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "18.75_81.25",
+   "latitude": 18.75,
+   "longitude": 81.25,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "18.75_82.75",
+   "latitude": 18.75,
+   "longitude": 82.75,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "18.75_84.25",
+   "latitude": 18.75,
+   "longitude": 84.25,
+   "south": 18.0,
+   "north": 19.5,
+   "west": 83.5,
+   "east": 85.0,
+   "land_fraction": 0.6
+  },
+  {
+   "id": "20.25_70.75",
+   "latitude": 20.25,
+   "longitude": 70.75,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 70.0,
+   "east": 71.5,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "20.25_72.25",
+   "latitude": 20.25,
+   "longitude": 72.25,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 0.12
+  },
+  {
+   "id": "20.25_73.75",
+   "latitude": 20.25,
+   "longitude": 73.75,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_75.25",
+   "latitude": 20.25,
+   "longitude": 75.25,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_76.75",
+   "latitude": 20.25,
+   "longitude": 76.75,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_78.25",
+   "latitude": 20.25,
+   "longitude": 78.25,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_79.75",
+   "latitude": 20.25,
+   "longitude": 79.75,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_81.25",
+   "latitude": 20.25,
+   "longitude": 81.25,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_82.75",
+   "latitude": 20.25,
+   "longitude": 82.75,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_84.25",
+   "latitude": 20.25,
+   "longitude": 84.25,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 83.5,
+   "east": 85.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "20.25_85.75",
+   "latitude": 20.25,
+   "longitude": 85.75,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 85.0,
+   "east": 86.5,
+   "land_fraction": 0.8
+  },
+  {
+   "id": "20.25_87.25",
+   "latitude": 20.25,
+   "longitude": 87.25,
+   "south": 19.5,
+   "north": 21.0,
+   "west": 86.5,
+   "east": 88.0,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "21.75_69.25",
+   "latitude": 21.75,
+   "longitude": 69.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 68.5,
+   "east": 70.0,
+   "land_fraction": 0.32
+  },
+  {
+   "id": "21.75_70.75",
+   "latitude": 21.75,
+   "longitude": 70.75,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 70.0,
+   "east": 71.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_72.25",
+   "latitude": 21.75,
+   "longitude": 72.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 0.76
+  },
+  {
+   "id": "21.75_73.75",
+   "latitude": 21.75,
+   "longitude": 73.75,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_75.25",
+   "latitude": 21.75,
+   "longitude": 75.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_76.75",
+   "latitude": 21.75,
+   "longitude": 76.75,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_78.25",
+   "latitude": 21.75,
+   "longitude": 78.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_79.75",
+   "latitude": 21.75,
+   "longitude": 79.75,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_81.25",
+   "latitude": 21.75,
+   "longitude": 81.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_82.75",
+   "latitude": 21.75,
+   "longitude": 82.75,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_84.25",
+   "latitude": 21.75,
+   "longitude": 84.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 83.5,
+   "east": 85.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_85.75",
+   "latitude": 21.75,
+   "longitude": 85.75,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 85.0,
+   "east": 86.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "21.75_87.25",
+   "latitude": 21.75,
+   "longitude": 87.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 86.5,
+   "east": 88.0,
+   "land_fraction": 0.72
+  },
+  {
+   "id": "21.75_88.75",
+   "latitude": 21.75,
+   "longitude": 88.75,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 88.0,
+   "east": 89.5,
+   "land_fraction": 0.32
+  },
+  {
+   "id": "21.75_93.25",
+   "latitude": 21.75,
+   "longitude": 93.25,
+   "south": 21.0,
+   "north": 22.5,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 0.16
+  },
+  {
+   "id": "23.25_67.75",
+   "latitude": 23.25,
+   "longitude": 67.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 67.0,
+   "east": 68.5,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "23.25_69.25",
+   "latitude": 23.25,
+   "longitude": 69.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 68.5,
+   "east": 70.0,
+   "land_fraction": 0.72
+  },
+  {
+   "id": "23.25_70.75",
+   "latitude": 23.25,
+   "longitude": 70.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 70.0,
+   "east": 71.5,
+   "land_fraction": 0.92
+  },
+  {
+   "id": "23.25_72.25",
+   "latitude": 23.25,
+   "longitude": 72.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_73.75",
+   "latitude": 23.25,
+   "longitude": 73.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_75.25",
+   "latitude": 23.25,
+   "longitude": 75.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_76.75",
+   "latitude": 23.25,
+   "longitude": 76.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_78.25",
+   "latitude": 23.25,
+   "longitude": 78.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_79.75",
+   "latitude": 23.25,
+   "longitude": 79.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_81.25",
+   "latitude": 23.25,
+   "longitude": 81.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_82.75",
+   "latitude": 23.25,
+   "longitude": 82.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_84.25",
+   "latitude": 23.25,
+   "longitude": 84.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 83.5,
+   "east": 85.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_85.75",
+   "latitude": 23.25,
+   "longitude": 85.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 85.0,
+   "east": 86.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_87.25",
+   "latitude": 23.25,
+   "longitude": 87.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 86.5,
+   "east": 88.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "23.25_88.75",
+   "latitude": 23.25,
+   "longitude": 88.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 88.0,
+   "east": 89.5,
+   "land_fraction": 0.48
+  },
+  {
+   "id": "23.25_91.75",
+   "latitude": 23.25,
+   "longitude": 91.75,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 91.0,
+   "east": 92.5,
+   "land_fraction": 0.4
+  },
+  {
+   "id": "23.25_93.25",
+   "latitude": 23.25,
+   "longitude": 93.25,
+   "south": 22.5,
+   "north": 24.0,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 0.52
+  },
+  {
+   "id": "24.75_69.25",
+   "latitude": 24.75,
+   "longitude": 69.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 68.5,
+   "east": 70.0,
+   "land_fraction": 0.16
+  },
+  {
+   "id": "24.75_70.75",
+   "latitude": 24.75,
+   "longitude": 70.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 70.0,
+   "east": 71.5,
+   "land_fraction": 0.56
+  },
+  {
+   "id": "24.75_72.25",
+   "latitude": 24.75,
+   "longitude": 72.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_73.75",
+   "latitude": 24.75,
+   "longitude": 73.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_75.25",
+   "latitude": 24.75,
+   "longitude": 75.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_76.75",
+   "latitude": 24.75,
+   "longitude": 76.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_78.25",
+   "latitude": 24.75,
+   "longitude": 78.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_79.75",
+   "latitude": 24.75,
+   "longitude": 79.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_81.25",
+   "latitude": 24.75,
+   "longitude": 81.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_82.75",
+   "latitude": 24.75,
+   "longitude": 82.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_84.25",
+   "latitude": 24.75,
+   "longitude": 84.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 83.5,
+   "east": 85.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_85.75",
+   "latitude": 24.75,
+   "longitude": 85.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 85.0,
+   "east": 86.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_87.25",
+   "latitude": 24.75,
+   "longitude": 87.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 86.5,
+   "east": 88.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_88.75",
+   "latitude": 24.75,
+   "longitude": 88.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 88.0,
+   "east": 89.5,
+   "land_fraction": 0.28
+  },
+  {
+   "id": "24.75_90.25",
+   "latitude": 24.75,
+   "longitude": 90.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 89.5,
+   "east": 91.0,
+   "land_fraction": 0.16
+  },
+  {
+   "id": "24.75_91.75",
+   "latitude": 24.75,
+   "longitude": 91.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 91.0,
+   "east": 92.5,
+   "land_fraction": 0.44
+  },
+  {
+   "id": "24.75_93.25",
+   "latitude": 24.75,
+   "longitude": 93.25,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "24.75_94.75",
+   "latitude": 24.75,
+   "longitude": 94.75,
+   "south": 24.0,
+   "north": 25.5,
+   "west": 94.0,
+   "east": 95.5,
+   "land_fraction": 0.32
+  },
+  {
+   "id": "26.25_69.25",
+   "latitude": 26.25,
+   "longitude": 69.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 68.5,
+   "east": 70.0,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "26.25_70.75",
+   "latitude": 26.25,
+   "longitude": 70.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 70.0,
+   "east": 71.5,
+   "land_fraction": 0.92
+  },
+  {
+   "id": "26.25_72.25",
+   "latitude": 26.25,
+   "longitude": 72.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_73.75",
+   "latitude": 26.25,
+   "longitude": 73.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_75.25",
+   "latitude": 26.25,
+   "longitude": 75.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_76.75",
+   "latitude": 26.25,
+   "longitude": 76.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_78.25",
+   "latitude": 26.25,
+   "longitude": 78.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_79.75",
+   "latitude": 26.25,
+   "longitude": 79.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_81.25",
+   "latitude": 26.25,
+   "longitude": 81.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_82.75",
+   "latitude": 26.25,
+   "longitude": 82.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_84.25",
+   "latitude": 26.25,
+   "longitude": 84.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 83.5,
+   "east": 85.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_85.75",
+   "latitude": 26.25,
+   "longitude": 85.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 85.0,
+   "east": 86.5,
+   "land_fraction": 0.8
+  },
+  {
+   "id": "26.25_87.25",
+   "latitude": 26.25,
+   "longitude": 87.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 86.5,
+   "east": 88.0,
+   "land_fraction": 0.6
+  },
+  {
+   "id": "26.25_88.75",
+   "latitude": 26.25,
+   "longitude": 88.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 88.0,
+   "east": 89.5,
+   "land_fraction": 0.44
+  },
+  {
+   "id": "26.25_90.25",
+   "latitude": 26.25,
+   "longitude": 90.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 89.5,
+   "east": 91.0,
+   "land_fraction": 0.76
+  },
+  {
+   "id": "26.25_91.75",
+   "latitude": 26.25,
+   "longitude": 91.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 91.0,
+   "east": 92.5,
+   "land_fraction": 0.92
+  },
+  {
+   "id": "26.25_93.25",
+   "latitude": 26.25,
+   "longitude": 93.25,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "26.25_94.75",
+   "latitude": 26.25,
+   "longitude": 94.75,
+   "south": 25.5,
+   "north": 27.0,
+   "west": 94.0,
+   "east": 95.5,
+   "land_fraction": 0.76
+  },
+  {
+   "id": "27.75_69.25",
+   "latitude": 27.75,
+   "longitude": 69.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 68.5,
+   "east": 70.0,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "27.75_70.75",
+   "latitude": 27.75,
+   "longitude": 70.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 70.0,
+   "east": 71.5,
+   "land_fraction": 0.56
+  },
+  {
+   "id": "27.75_72.25",
+   "latitude": 27.75,
+   "longitude": 72.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 0.88
+  },
+  {
+   "id": "27.75_73.75",
+   "latitude": 27.75,
+   "longitude": 73.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "27.75_75.25",
+   "latitude": 27.75,
+   "longitude": 75.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "27.75_76.75",
+   "latitude": 27.75,
+   "longitude": 76.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "27.75_78.25",
+   "latitude": 27.75,
+   "longitude": 78.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "27.75_79.75",
+   "latitude": 27.75,
+   "longitude": 79.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "27.75_81.25",
+   "latitude": 27.75,
+   "longitude": 81.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 0.8
+  },
+  {
+   "id": "27.75_82.75",
+   "latitude": 27.75,
+   "longitude": 82.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 82.0,
+   "east": 83.5,
+   "land_fraction": 0.36
+  },
+  {
+   "id": "27.75_84.25",
+   "latitude": 27.75,
+   "longitude": 84.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 83.5,
+   "east": 85.0,
+   "land_fraction": 0.16
+  },
+  {
+   "id": "27.75_88.75",
+   "latitude": 27.75,
+   "longitude": 88.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 88.0,
+   "east": 89.5,
+   "land_fraction": 0.36
+  },
+  {
+   "id": "27.75_91.75",
+   "latitude": 27.75,
+   "longitude": 91.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 91.0,
+   "east": 92.5,
+   "land_fraction": 0.32
+  },
+  {
+   "id": "27.75_93.25",
+   "latitude": 27.75,
+   "longitude": 93.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 0.88
+  },
+  {
+   "id": "27.75_94.75",
+   "latitude": 27.75,
+   "longitude": 94.75,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 94.0,
+   "east": 95.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "27.75_96.25",
+   "latitude": 27.75,
+   "longitude": 96.25,
+   "south": 27.0,
+   "north": 28.5,
+   "west": 95.5,
+   "east": 97.0,
+   "land_fraction": 0.88
+  },
+  {
+   "id": "29.25_72.25",
+   "latitude": 29.25,
+   "longitude": 72.25,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 71.5,
+   "east": 73.0,
+   "land_fraction": 0.12
+  },
+  {
+   "id": "29.25_73.75",
+   "latitude": 29.25,
+   "longitude": 73.75,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.92
+  },
+  {
+   "id": "29.25_75.25",
+   "latitude": 29.25,
+   "longitude": 75.25,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "29.25_76.75",
+   "latitude": 29.25,
+   "longitude": 76.75,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "29.25_78.25",
+   "latitude": 29.25,
+   "longitude": 78.25,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "29.25_79.75",
+   "latitude": 29.25,
+   "longitude": 79.75,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.88
+  },
+  {
+   "id": "29.25_93.25",
+   "latitude": 29.25,
+   "longitude": 93.25,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 92.5,
+   "east": 94.0,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "29.25_94.75",
+   "latitude": 29.25,
+   "longitude": 94.75,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 94.0,
+   "east": 95.5,
+   "land_fraction": 0.4
+  },
+  {
+   "id": "29.25_96.25",
+   "latitude": 29.25,
+   "longitude": 96.25,
+   "south": 28.5,
+   "north": 30.0,
+   "west": 95.5,
+   "east": 97.0,
+   "land_fraction": 0.32
+  },
+  {
+   "id": "30.75_73.75",
+   "latitude": 30.75,
+   "longitude": 73.75,
+   "south": 30.0,
+   "north": 31.5,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.2
+  },
+  {
+   "id": "30.75_75.25",
+   "latitude": 30.75,
+   "longitude": 75.25,
+   "south": 30.0,
+   "north": 31.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "30.75_76.75",
+   "latitude": 30.75,
+   "longitude": 76.75,
+   "south": 30.0,
+   "north": 31.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "30.75_78.25",
+   "latitude": 30.75,
+   "longitude": 78.25,
+   "south": 30.0,
+   "north": 31.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 0.96
+  },
+  {
+   "id": "30.75_79.75",
+   "latitude": 30.75,
+   "longitude": 79.75,
+   "south": 30.0,
+   "north": 31.5,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.6
+  },
+  {
+   "id": "30.75_81.25",
+   "latitude": 30.75,
+   "longitude": 81.25,
+   "south": 30.0,
+   "north": 31.5,
+   "west": 80.5,
+   "east": 82.0,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "32.25_73.75",
+   "latitude": 32.25,
+   "longitude": 73.75,
+   "south": 31.5,
+   "north": 33.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "32.25_75.25",
+   "latitude": 32.25,
+   "longitude": 75.25,
+   "south": 31.5,
+   "north": 33.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 0.8
+  },
+  {
+   "id": "32.25_76.75",
+   "latitude": 32.25,
+   "longitude": 76.75,
+   "south": 31.5,
+   "north": 33.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "32.25_78.25",
+   "latitude": 32.25,
+   "longitude": 78.25,
+   "south": 31.5,
+   "north": 33.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 0.8
+  },
+  {
+   "id": "32.25_79.75",
+   "latitude": 32.25,
+   "longitude": 79.75,
+   "south": 31.5,
+   "north": 33.0,
+   "west": 79.0,
+   "east": 80.5,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "33.75_73.75",
+   "latitude": 33.75,
+   "longitude": 73.75,
+   "south": 33.0,
+   "north": 34.5,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.36
+  },
+  {
+   "id": "33.75_75.25",
+   "latitude": 33.75,
+   "longitude": 75.25,
+   "south": 33.0,
+   "north": 34.5,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "33.75_76.75",
+   "latitude": 33.75,
+   "longitude": 76.75,
+   "south": 33.0,
+   "north": 34.5,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 1.0
+  },
+  {
+   "id": "33.75_78.25",
+   "latitude": 33.75,
+   "longitude": 78.25,
+   "south": 33.0,
+   "north": 34.5,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 0.88
+  },
+  {
+   "id": "35.25_73.75",
+   "latitude": 35.25,
+   "longitude": 73.75,
+   "south": 34.5,
+   "north": 36.0,
+   "west": 73.0,
+   "east": 74.5,
+   "land_fraction": 0.08
+  },
+  {
+   "id": "35.25_75.25",
+   "latitude": 35.25,
+   "longitude": 75.25,
+   "south": 34.5,
+   "north": 36.0,
+   "west": 74.5,
+   "east": 76.0,
+   "land_fraction": 0.04
+  },
+  {
+   "id": "35.25_76.75",
+   "latitude": 35.25,
+   "longitude": 76.75,
+   "south": 34.5,
+   "north": 36.0,
+   "west": 76.0,
+   "east": 77.5,
+   "land_fraction": 0.32
+  },
+  {
+   "id": "35.25_78.25",
+   "latitude": 35.25,
+   "longitude": 78.25,
+   "south": 34.5,
+   "north": 36.0,
+   "west": 77.5,
+   "east": 79.0,
+   "land_fraction": 0.28
+  }
+ ],
+ "mask_source": "Natural Earth 1:50m countries (public domain) via world-atlas@2; computational mask, not a boundary depiction"
+}

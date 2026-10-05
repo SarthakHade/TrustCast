@@ -1,0 +1,19 @@
+{
+ "generated_at": "2026-10-05T13:22:55+00:00",
+ "resolution_deg": 1.5,
+ "history_days": 56,
+ "mask_source": "Natural Earth 1:50m countries (public domain) via world-atlas@2; computational mask, not a boundary depiction",
+ "models": [
+  "ECMWF IFS",
+  "NOAA GFS",
+  "ECMWF AIFS",
+  "DWD ICON"
+ ],
+ "reference": "ERA5 (Open-Meteo Historical Weather API)",
+ "forecasts": "Open-Meteo Previous Runs + Forecast APIs",
+ "cells": 167,
+ "ok_cells": 167,
+ "requests": 54,
+ "retries": 0,
+ "duration_s": 764
+}

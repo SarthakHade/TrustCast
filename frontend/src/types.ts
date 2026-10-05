@@ -1,6 +1,35 @@
 // API response shapes. These mirror the FastAPI schemas; field names must not change.
 
 export type Location = { name: string; latitude: number; longitude: number }
+
+/** A real geocoder result from /api/locations/search (fields exactly as returned by the API). */
+export type GeocodeResult = {
+  id?: number
+  name: string
+  display_name: string
+  area: string
+  latitude: number
+  longitude: number
+  country?: string
+  country_code?: string
+  admin1?: string
+  admin2?: string
+  admin3?: string
+  admin4?: string
+  feature_code?: string
+  population?: number
+}
+
+/** The forecast context: these exact coordinates are sent to every pipeline step. */
+export type SelectedLocation = {
+  name: string
+  display_name: string
+  area?: string
+  latitude: number
+  longitude: number
+  source: 'preset' | 'geocoder'
+}
+
 // Decided per request from what each real source returned (see backend schemas/weather.py).
 export type ModelStatus = 'live' | 'waiting' | 'unavailable' | 'error' | 'inactive' | 'adapter_ready' | 'data_unavailable'
 type Provenance = Record<string, string | number | boolean | null>
@@ -117,6 +146,7 @@ export type BlendPoint = {
   renormalized: boolean
 }
 export type ExcludedModel = { model: string; status: ModelStatus; reason: string }
+export type BlendModel = { model: string; trust_weight: number; trust_weight_percent: number | null; init_time: string | null; points: number }
 export type BlendResponse = {
   location: string
   variable: string
@@ -127,7 +157,7 @@ export type BlendResponse = {
   message: string | null
   method: string
   formula: string[]
-  models_used: { model: string; trust_weight: number; trust_weight_percent: number | null; init_time: string | null; points: number }[]
+  models_used: BlendModel[]
   excluded_models: ExcludedModel[]
   forecast: BlendPoint[]
 }
@@ -211,3 +241,116 @@ export type RiskResponse = {
   risks: RiskIndicator[]
 }
 
+
+// ---- Advanced evaluation (walk-forward skill engine) ----
+export type MethodMetrics = {
+  n: number
+  mae: number | null
+  rmse: number | null
+  bias: number | null
+  correlation: number | null
+  skill_vs_equal: number | null
+  skill_vs_best_single: number | null
+}
+export type BreakdownRow = { group: string; hours: number; days: number; skill_vs_equal: number | null; skill_vs_best_single: number | null } & Record<string, number | string | null>
+export type EventMethod = { hits: number; misses: number; false_alarms: number; correct_negatives: number; pod: number | null; far: number | null; csi: number | null }
+export type SkillReport = {
+  location: string
+  latitude: number
+  longitude: number
+  variable: Variable
+  unit: string
+  lead_day: number
+  models: string[]
+  period_start: string | null
+  period_end: string | null
+  evaluation_days: number
+  common_hours: number
+  metrics: Record<string, MethodMetrics>
+  skill_intervals_90: Record<'equal' | 'best_single', { low: number | null; high: number | null; resamples: number } | null>
+  bias_correction_gain: number | null
+  adaptive_weighting_gain: number | null
+  by_season: BreakdownRow[]
+  by_regime: BreakdownRow[]
+  variant_usage: Record<string, number>
+  fallback_days: number
+  events?: { accumulation: string; days: number; thresholds: { threshold_mm: number; observed_events: number; methods: Record<string, EventMethod> }[] }
+  oos_residuals: { samples: number; p10: number | null; p90: number | null; period_start: string | null; period_end: string | null }
+  live: {
+    status: string
+    variant?: string
+    level?: string
+    note?: string
+    weights?: Record<string, number>
+    samples?: number
+    training_end?: string
+    bias_correction?: { kind: string; mode: string; per_model: Record<string, number> }
+    reason?: string
+  } | null
+  live_target: { date: string; regime: string; regime_label: string; season: string; season_label: string }
+  training: { window_days: number; gap_days: number }
+  sources: Record<string, string>
+  data_quality: Record<string, number | string | boolean | null>
+  data_fetched_at: string | null
+  methodology: Record<string, string | number>
+  probabilistic: { status: string; reason: string }
+}
+
+export type SpatialCell = {
+  id: string
+  latitude: number
+  longitude: number
+  south: number
+  north: number
+  west: number
+  east: number
+  land_fraction: number
+  status: string
+  reason?: string
+  evaluation_days?: number
+  common_hours?: number
+  period_start?: string | null
+  period_end?: string | null
+  skill?: {
+    trustcast_rmse: number | null
+    equal_rmse: number | null
+    best_single_rmse: number | null
+    skill_vs_equal: number | null
+    skill_vs_best_single: number | null
+    model_rmse: Record<string, number | null>
+  }
+  regime?: string
+  season?: string
+  coverage?: Record<string, number>
+  live?: { variant: string; level: string; weights: Record<string, number>; dominant: string; training_end: string; bias_correction: Record<string, number> }
+  risks?: Record<string, { level: RiskLevel | null; status: string; value: number | null; unit: string; peak_time: string | null; models_exceeding: number; models_total: number }>
+}
+export type SpatialLayer = {
+  status?: string
+  reason?: string
+  generated_at?: string
+  issued_at?: string
+  resolution_deg?: number
+  history_days?: number
+  mask_source?: string
+  models?: string[]
+  variable?: Variable
+  unit?: string
+  lead_day?: number
+  note?: string
+  pooled?: Record<string, { weights: Record<string, number>; hours: number; cells: number; label: string }>
+  cells: SpatialCell[]
+}
+
+// ---- AIGEFS ensemble guidance ----
+export type EnsembleThreshold = { level: 'ELEVATED' | 'HIGH'; threshold: number; members_exceeding: number; members_valid: number; probability: number }
+export type EnsembleRisk = {
+  status: string
+  reason?: string
+  unit?: string
+  valid_time?: string
+  window_start?: string | null
+  thresholds?: EnsembleThreshold[]
+  member_percentiles?: { p50: number | null; p75: number | null; p90: number | null; max: number | null }
+}
+export type EnsembleGuidance = { status: string; reason?: string; source?: string; run?: string; members?: number; risks?: Record<string, EnsembleRisk>; caveats?: string[] }

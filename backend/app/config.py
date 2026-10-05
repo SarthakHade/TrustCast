@@ -33,6 +33,9 @@ OPEN_METEO_ENSEMBLE_META_URL = os.getenv(
 # Official sources checked for models that cannot be ingested as point data yet
 DWD_AICON_RUNS_URL = os.getenv("DWD_AICON_RUNS_URL", "https://opendata.dwd.de/weather/nwp/v1/m/aicon/p/T_2M/r/")
 NCMRWF_API_URL = os.getenv("NCMRWF_API_URL", "https://nwp.ncmrwf.gov.in/apis/api/v1")
+# Location search: free Open-Meteo Geocoding API (no key); results cached to respect rate limits
+OPEN_METEO_GEOCODING_URL = os.getenv("OPEN_METEO_GEOCODING_URL", "https://geocoding-api.open-meteo.com/v1/search")
+GEOCODING_CACHE_TTL_SECONDS = int(os.getenv("GEOCODING_CACHE_TTL_SECONDS", "86400"))
 
 # Step 3 historical verification: archived forecasts vs ERA5 reanalysis (no key required)
 OPEN_METEO_PREVIOUS_RUNS_URL = os.getenv(
@@ -51,3 +54,10 @@ PROJECT_INFO = {
     "team": "VisionCrafters",
     "stage": "risk_detection",
 }
+
+# Skill engine (walk-forward validation, adaptive blending) and spatial precomputation
+_BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SKILL_CACHE_DIR = os.getenv("SKILL_CACHE_DIR", os.path.join(_BACKEND_DIR, "data", "cache"))
+SPATIAL_DATA_DIR = os.getenv("SPATIAL_DATA_DIR", os.path.join(_BACKEND_DIR, "data", "spatial"))
+SKILL_CACHE_TTL_SECONDS = int(os.getenv("SKILL_CACHE_TTL_SECONDS", "21600"))
+OPEN_METEO_FORECAST_URL = os.getenv("OPEN_METEO_FORECAST_URL", "https://api.open-meteo.com/v1/forecast")

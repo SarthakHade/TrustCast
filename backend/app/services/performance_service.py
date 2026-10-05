@@ -19,7 +19,7 @@ from app.config import (
     OPEN_METEO_PREVIOUS_RUNS_URL,
     PERFORMANCE_CACHE_TTL_SECONDS,
 )
-from app.data.locations import DEMO_LOCATIONS
+from app.services.location_service import LocationInput, location_key, resolve_location
 from app.schemas.performance import ModelPerformance, PerformanceResponse
 from app.services.weather.cache import InMemoryTTLCache
 from app.services.weather.forecast_provider import ForecastProvider, ProviderDataError
@@ -103,29 +103,25 @@ class PerformanceService:
         self.raw_cache = InMemoryTTLCache(ttl_seconds=PERFORMANCE_CACHE_TTL_SECONDS)
 
     @staticmethod
-    def _resolve(location_name: str, variable: str) -> dict:
-        location = next(
-            (loc for loc in DEMO_LOCATIONS if loc["name"].casefold() == location_name.casefold()),
-            None,
-        )
-        if location is None:
-            names = ", ".join(loc["name"] for loc in DEMO_LOCATIONS)
-            raise KeyError(f"Unknown location '{location_name}'. Use one of: {names}")
+    def _resolve(location_input: LocationInput, variable: str) -> dict:
+        """Preset name or selected coordinates; ERA5 and archived forecasts work for any point."""
+        location = resolve_location(location_input)
         if variable not in VARIABLES:
             raise KeyError(f"Unknown variable '{variable}'. Use one of: {', '.join(VARIABLES)}")
         return location
 
     async def evaluate(
-        self, location_name: str, variable: str, days: int, lead_day: int
+        self, location_input: LocationInput, variable: str, days: int, lead_day: int
     ) -> PerformanceResponse:
-        location = self._resolve(location_name, variable)
-        key = f"{location['name']}:{variable}:{days}:{lead_day}:{date.today().isoformat()}"
+        location = self._resolve(location_input, variable)
+        key = f"{location_key(location)}:{variable}:{days}:{lead_day}:{date.today().isoformat()}"
         result = await self.cache.get_or_set(
             key,
             lambda: self._evaluate(location, variable, days, lead_day),
             cache_if=lambda r: all(m.status != "error" for m in r.models),
         )
-        return result.model_copy(deep=True)
+        # Same coordinates may be selected under a different display name: label with the current one.
+        return result.model_copy(deep=True, update={"location": location["name"]})
 
     async def _fetch_raw(
         self, location: dict, om_variable: str, lead_day: int, evaluable: list
@@ -148,7 +144,7 @@ class PerformanceService:
                 )
             return observations, forecasts
 
-        key = f"raw:{location['name']}:{om_variable}:{lead_day}:{date.today().isoformat()}"
+        key = f"raw:{location_key(location)}:{om_variable}:{lead_day}:{date.today().isoformat()}"
         return await self.raw_cache.get_or_set(
             key,
             fetch,
@@ -177,13 +173,13 @@ class PerformanceService:
         return {t: v for t, v in all_observations.items() if t >= cutoff}, forecasts
 
     async def verification_series(
-        self, location_name: str, variable: str, days: int, lead_day: int
+        self, location_input: LocationInput, variable: str, days: int, lead_day: int
     ) -> tuple[Series, dict[str, Series]]:
         """Real (observations, archived forecasts per model) for the evaluation window.
 
         Reuses the same cached raw data as `evaluate`; models whose source failed are omitted.
         """
-        location = self._resolve(location_name, variable)
+        location = self._resolve(location_input, variable)
         observations, forecasts = await self._window_data(location, variable, days, lead_day)
         series = {
             provider.get_model_name(): {t: v for t, v in forecast.items() if t in observations}

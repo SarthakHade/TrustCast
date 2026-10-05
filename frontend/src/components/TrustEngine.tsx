@@ -1,139 +1,95 @@
-import { VARIABLE_LABEL, fmt, humanize, modelHex } from '../lib'
-import type { TrustResponse, Variable } from '../types'
-import { WeightRing } from './charts'
-import { Loading, Notice, SectionHeader, StatusPill } from './ui'
+import { PRIMARY_SOURCES, modelHex, shortName } from '../lib'
+import type { BlendModel, ModelTrust, TrustResponse } from '../types'
+import { Loading, Notice, SectionHeader } from './ui'
 
-type Props = { trust: TrustResponse | null; loading: boolean; error: string; locationName: string }
+type Props = { trust: TrustResponse | null; applied: BlendModel[] | null; loading: boolean; error: string; locationName: string }
 
-export function TrustEngine({ trust, loading, error, locationName }: Props) {
-  const weighted = [...(trust?.models.filter((m) => m.included) ?? [])].sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))
-  const excluded = trust?.models.filter((m) => !m.included) ?? []
-  const unit = trust?.unit ?? ''
-  const variableLabel = trust ? (VARIABLE_LABEL[trust.variable as Variable] ?? humanize(trust.variable)) : ''
+/** Words for a model's influence: its rank and its weight relative to the top model (weights come from the backend Trust Engine). */
+function influence(rank: number, weight: number, top: number) {
+  const ratio = top > 0 ? weight / top : 0
+  if (rank === 0) return { label: 'Strongest influence', reason: 'Currently showing the strongest historical performance' }
+  if (ratio >= 0.75) return { label: 'Strong influence', reason: 'Currently showing strong historical performance' }
+  if (ratio >= 0.5) return { label: 'Moderate influence', reason: 'Contributes a balanced share of the forecast' }
+  return { label: 'Supporting influence', reason: 'Useful supporting forecast' }
+}
+
+/** Recent form from the backend's recent vs full-period error (same ±10% rule the backend uses for its reasons). */
+function recentForm(m: ModelTrust) {
+  if (m.recent_rmse === null || m.historical_rmse === null || !m.historical_rmse) return null
+  const change = m.recent_rmse / m.historical_rmse - 1
+  if (change <= -0.1) return 'Improving recently'
+  if (change >= 0.1) return 'Less accurate recently'
+  return null
+}
+
+export function TrustEngine({ trust, applied, loading, error, locationName }: Props) {
+  // Weights actually used by the forecast (bias-corrected adaptive blend when available).
+  const appliedWeight = new Map((applied ?? []).map((m) => [m.model, m.trust_weight]))
+  const weighted = (trust?.models ?? [])
+    .filter((m) => m.included && PRIMARY_SOURCES.includes(m.model))
+    .map((m) => (appliedWeight.has(m.model) ? { ...m, weight: appliedWeight.get(m.model) ?? 0 } : m))
+    .sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))
+  const top = weighted[0]?.weight ?? 0
 
   return (
-    <section id="trust" aria-labelledby="trust-title" className="scroll-mt-6">
-      <SectionHeader index="03" question="How does TrustCast decide which forecast to trust?" title="Trust Engine">
+    <section id="trust" aria-labelledby="trust-title" className="scroll-mt-24">
+      <SectionHeader index="03" question="Why these models influence the forecast" title="Model influence" titleId="trust-title">
         <p className="max-w-md text-sm text-mist">
-          Measured historical and recent model error is converted into reliability information, then normalised into the weights used for blending.
+          TrustCast gives more influence to the models that have performed better{locationName ? ` in ${locationName}` : ' here'}, and keeps adjusting as their recent accuracy changes.
         </p>
       </SectionHeader>
-      <h2 id="trust-title" className="sr-only">Trust Engine</h2>
 
-      {loading && <Loading>Calculating trust for {locationName}…</Loading>}
+      {loading && <Loading>Weighing the models…</Loading>}
       {error && !loading && <Notice>{error}</Notice>}
-      {trust?.message && !loading && <Notice tone={trust.status === 'insufficient_data' ? 'error' : 'warn'}>{trust.message}</Notice>}
+      {trust?.status === 'insufficient_data' && !loading && <Notice>Not enough history yet to weigh the models for this location.</Notice>}
 
       {trust && !loading && weighted.length > 0 && (
-        <div className="card p-5 sm:p-8" style={{ background: 'radial-gradient(90% 70% at 0% 0%, rgba(84,120,160,0.22), transparent 60%), radial-gradient(80% 60% at 100% 100%, rgba(200,140,90,0.14), transparent 60%), linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))' }}>
-          {/* Flow: inputs → trust score → weight */}
-          <ol className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-stretch" aria-label="Trust Engine calculation flow">
-            <li className="card-soft p-4">
-              <p className="eyebrow">Inputs</p>
-              <ul className="mt-2 space-y-1.5 text-sm text-slate-200">
-                <li>Historical error <span className="text-mist">· {trust.historical_days}-day RMSE</span></li>
-                {trust.recent_days && <li>Recent error <span className="text-mist">· last {trust.recent_days} days RMSE</span></li>}
-                <li>Lead-time context <span className="text-mist">· scored at Day {trust.lead_day}</span></li>
-              </ul>
-            </li>
-            <FlowArrow />
-            <li className="card-soft p-4">
-              <p className="eyebrow">Trust score</p>
-              <p className="num mt-2 text-sm leading-relaxed text-slate-200">
-                {trust.recent_days ? '0.7 × historical inverse error + 0.3 × recent inverse error' : 'historical inverse error'}
-              </p>
-              <p className="mt-1 text-xs text-mist">inverse error = 1 / (RMSE + 0.05)</p>
-            </li>
-            <FlowArrow />
-            <li className="card-soft p-4">
-              <p className="eyebrow">Dynamic weight</p>
-              <p className="mt-2 text-sm text-slate-200">trust score ÷ Σ trust scores</p>
-              <p className="mt-1 text-xs text-mist">Only available models count; the weights sum to 100%.</p>
-            </li>
-          </ol>
+        <div
+          className="card reveal p-5 sm:p-8"
+          style={{ background: 'radial-gradient(90% 70% at 0% 0%, rgba(84,120,160,0.22), transparent 60%), radial-gradient(80% 60% at 100% 100%, rgba(200,140,90,0.14), transparent 60%), linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))' }}
+        >
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
+            <ol className="space-y-5 lg:col-span-7">
+              {weighted.map((m, i) => {
+                const inf = influence(i, m.weight ?? 0, top)
+                const form = recentForm(m)
+                return (
+                  <li key={m.model} className="flex items-start gap-4">
+                    <span className="num mt-0.5 w-5 shrink-0 text-sm text-cream/60">{i + 1}</span>
+                    <div className="min-w-0">
+                      <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span className="flex items-center gap-2 text-base font-semibold text-white">
+                          <span className="h-2.5 w-2.5 rounded-full" style={{ background: modelHex(m.model) }} aria-hidden="true" />{m.model}
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-semibold text-slate-200">{inf.label}</span>
+                      </p>
+                      <p className="mt-1 text-sm text-mist">{inf.reason}{form ? ` · ${form}` : ''}</p>
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
 
-          <div className="mt-8">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <p className="text-sm font-semibold text-white">Weights for {trust.location} · {variableLabel} · Day {trust.lead_day}</p>
-              <p className="num text-xs text-mist">Total {weighted.reduce((s, m) => s + (m.weight_percent ?? 0), 0).toFixed(1)}% across {weighted.length} models</p>
-            </div>
-            <div className="mt-3 flex h-4 overflow-hidden rounded-full bg-white/5" role="img" aria-label={weighted.map((m) => `${m.model} ${m.weight_percent?.toFixed(1)}%`).join(', ')}>
-              {weighted.map((m) => (
-                <div
-                  key={m.model}
-                  style={{ width: `${(m.weight ?? 0) * 100}%`, background: modelHex(m.model) }}
-                  className="h-full border-r-2 border-ink-900 last:border-r-0"
-                  title={`${m.model}: ${m.weight_percent?.toFixed(1)}%`}
-                />
-              ))}
+            <div className="card-soft p-5 lg:col-span-5" aria-label="Influence on the TrustCast forecast, from most to least">
+              <p className="eyebrow">More influence</p>
+              <ul className="mt-4 space-y-3">
+                {weighted.map((m) => (
+                  <li key={m.model} className="flex items-center gap-3">
+                    <span className="w-12 shrink-0 text-sm text-slate-200">{shortName(m.model)}</span>
+                    <span className="h-2 flex-1 rounded-full bg-white/8">
+                      <span
+                        className="block h-2 rounded-full"
+                        style={{ width: `${top ? ((m.weight ?? 0) / top) * 100 : 0}%`, background: `linear-gradient(90deg, ${modelHex(m.model)}88, ${modelHex(m.model)})` }}
+                      />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="eyebrow mt-4 text-right">Less influence</p>
             </div>
           </div>
-
-          <div className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${weighted.length > 3 ? 'xl:grid-cols-4' : 'xl:grid-cols-3'}`}>
-            {weighted.map((m) => (
-              <article key={m.model} className="card-soft flex flex-col p-5">
-                <div className="flex items-center gap-4">
-                  <WeightRing value={m.weight ?? 0} color={modelHex(m.model)} label={`${m.model} weight ${m.weight_percent?.toFixed(1)} percent`} />
-                  <div className="min-w-0">
-                    <h3 className="text-base font-semibold text-white">{m.model}</h3>
-                    <p className="text-xs text-mist">{m.model_type}</p>
-                    <p className="num mt-1 text-xs text-slate-300">Trust score <span className="font-bold text-cream">{fmt(m.trust_score, 2)}</span></p>
-                  </div>
-                </div>
-                <dl className="num mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                  <dt className="text-mist" title="RMSE over the full evaluation window">Historical RMSE</dt>
-                  <dd className="text-right font-semibold text-slate-100">{fmt(m.historical_rmse, 2)} {unit}</dd>
-                  <dt className="text-mist" title="RMSE over the most recent days">Recent RMSE</dt>
-                  <dd className="text-right font-semibold text-slate-100">{m.recent_rmse === null ? '—' : `${fmt(m.recent_rmse, 2)} ${unit}`}</dd>
-                  <dt className="text-mist" title="1 / (historical RMSE + 0.05)">Historical inverse error</dt>
-                  <dd className="text-right font-semibold text-slate-100">{fmt(m.historical_skill, 2)}</dd>
-                  <dt className="text-mist" title="1 / (recent RMSE + 0.05)">Recent inverse error</dt>
-                  <dd className="text-right font-semibold text-slate-100">{fmt(m.recent_skill, 2)}</dd>
-                </dl>
-                <ul className="mt-4 space-y-1.5 border-t border-white/5 pt-3 text-xs leading-relaxed text-mist">
-                  {m.reasons.map((r) => <li key={r} className="flex gap-2"><span aria-hidden="true" className="text-cream/70">›</span><span>{r}</span></li>)}
-                </ul>
-              </article>
-            ))}
-          </div>
-
-          {excluded.length > 0 && (
-            <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-mist">
-              <span>Not weighted:</span>
-              {excluded.map((m) => (
-                <span key={m.model} className="flex items-center gap-2 rounded-full border border-dashed border-white/12 px-3 py-1" title={m.reasons[0]}>
-                  <span className="text-slate-300">{m.model}</span><StatusPill status={m.status} />
-                </span>
-              ))}
-            </div>
-          )}
-
-          <details className="mt-6 rounded-2xl border border-white/5 bg-black/20 p-4 text-sm">
-            <summary className="font-semibold text-slate-200">Why do the weights differ?</summary>
-            <div className="mt-3 grid grid-cols-1 gap-4 text-xs text-mist md:grid-cols-2">
-              <ul className="space-y-1.5 leading-relaxed">
-                <li>✓ Lower measured error → higher inverse error → higher trust.</li>
-                {trust.recent_days && <li>✓ The last {trust.recent_days} days count for 30%, so a model that is currently drifting loses trust.</li>}
-                <li>✓ The weights are normalised across available models and sum to 100%.</li>
-                <li>✓ Unavailable models are excluded and do not affect the denominator.</li>
-                <li>✓ Deterministic: the same data always gives the same weights. No randomness, no hard-coded ranking.</li>
-                <li>✓ Weights are specific to this location, variable and lead time. They are not probabilities of correctness.</li>
-              </ul>
-              <ul className="num space-y-1 font-mono text-[11px] leading-relaxed text-slate-300">
-                {trust.formula.map((line) => <li key={line} className="break-words">{line}</li>)}
-              </ul>
-            </div>
-          </details>
         </div>
       )}
     </section>
-  )
-}
-
-function FlowArrow() {
-  return (
-    <li aria-hidden="true" className="flex items-center justify-center text-cream/50">
-      <svg viewBox="0 0 24 24" className="h-5 w-5 rotate-90 md:rotate-0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
-    </li>
   )
 }

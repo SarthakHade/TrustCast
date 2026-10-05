@@ -7,6 +7,7 @@ import httpx
 
 from app.config import OPEN_METEO_SINGLE_RUNS_URL
 from app.schemas.weather import ForecastRecord, ModelDescriptor, ProviderForecast
+from app.services.location_service import annotate_grid_distance
 from app.services.weather.forecast_provider import (
     ForecastProvider,
     ProviderDataError,
@@ -65,7 +66,9 @@ class OpenMeteoSingleRunProvider(ForecastProvider):
                         not_published += 1  # this run is not published yet; try an older one
                     response.raise_for_status()
                     payload = response.json()
-                    return self.normalize_payload(payload, init_time)
+                    forecast = self.normalize_payload(payload, init_time)
+                    annotate_grid_distance(forecast.provenance, latitude, longitude)
+                    return forecast
                 except (httpx.HTTPError, ValueError, ProviderDataError) as exc:
                     errors.append(str(exc))
 

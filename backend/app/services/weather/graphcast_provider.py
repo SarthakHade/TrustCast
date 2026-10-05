@@ -8,7 +8,7 @@ counted as available models, or used for uncertainty / risk.
 from app.schemas.weather import ModelDescriptor, ProviderForecast
 from app.services.weather.forecast_provider import ForecastProvider, ProviderUnavailableError
 
-NOT_RUNNING = "Optional · not running: no inference pipeline or verified public point-forecast feed is connected."
+NOT_RUNNING = "Not running: no inference pipeline or verified public point-forecast feed is connected."
 
 
 class _InactiveProvider(ForecastProvider):

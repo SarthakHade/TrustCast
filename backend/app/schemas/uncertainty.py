@@ -53,6 +53,8 @@ class HistoricalError(WeatherSchema):
 
 class UncertaintyResponse(WeatherSchema):
     location: str
+    latitude: float | None = None
+    longitude: float | None = None
     variable: str
     unit: str
     forecast_days: int

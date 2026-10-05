@@ -55,6 +55,8 @@ class RiskIndicator(WeatherSchema):
 
 class RiskResponse(WeatherSchema):
     location: str
+    latitude: float | None = None
+    longitude: float | None = None
     forecast_days: int
     lead_day: int
     status: Literal["ok", "insufficient_data"]
