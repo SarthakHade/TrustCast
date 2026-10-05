@@ -13,11 +13,12 @@ load_dotenv()
 BACKEND_HOST = os.getenv("BACKEND_HOST", "0.0.0.0")
 BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8000"))
 
-# CORS - allow frontend dev server
+# CORS - allow local development and deployed Netlify frontend
 FRONTEND_PORT = os.getenv("FRONTEND_PORT", "5173")
 CORS_ORIGINS = [
     f"http://localhost:{FRONTEND_PORT}",
     f"http://127.0.0.1:{FRONTEND_PORT}",
+    "https://trustcastai.netlify.app",
 ]
 
 # Step 2 weather ingestion (no key required for the selected public source)
